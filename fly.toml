@@ -1,0 +1,29 @@
+app = "shrimpy-api"
+primary_region = "iad"
+
+[build]
+  dockerfile = "apps/api/Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "3001"
+  JWT_ACCESS_EXPIRES_IN = "15m"
+  JWT_REFRESH_EXPIRES_IN = "30d"
+
+[http_service]
+  internal_port = 3001
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    grace_period = "10s"
+    interval = "30s"
+    method = "GET"
+    path = "/v1/health"
+    timeout = "5s"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"

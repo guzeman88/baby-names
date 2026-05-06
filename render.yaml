@@ -25,7 +25,7 @@ services:
       - key: JWT_REFRESH_SECRET
         generateValue: true
       - key: FRONTEND_URL
-        value: https://your-frontend.app
+        value: https://shrimpyapp.vercel.app
 
 databases:
   - name: babynames-db
