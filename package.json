@@ -1,0 +1,21 @@
+{
+  "name": "babyname",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "pipeline:run": "npm run start --workspace=packages/data-pipeline",
+    "pipeline:dry-run": "npm run dry-run --workspace=packages/data-pipeline"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  }
+}

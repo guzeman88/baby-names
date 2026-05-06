@@ -1,0 +1,159 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Seed configuration
+// Run: npx prisma db seed
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  M
+  F
+}
+
+enum ListType {
+  LIKED
+  PASSED
+  CUSTOM
+}
+
+enum SwipeDecision {
+  LIKED
+  PASSED
+}
+
+enum GenderPreference {
+  BOY
+  GIRL
+  BOTH
+}
+
+model Name {
+  id                   Int      @id @default(autoincrement())
+  name                 String   @db.VarChar(64)
+  gender               Gender
+  popularityRank       Int
+  popularityPercentile Float
+  totalBirths          Int
+  recentBirths         Int
+  peakRank             Int
+  peakYear             Int
+  firstYear            Int
+  lastYear             Int
+
+  yearlyStats  NameYearlyStat[]
+  listEntries  ListEntry[]
+  swipeHistory SwipeHistory[]
+
+  @@unique([name, gender])
+  @@index([gender, popularityRank])
+  @@index([gender, popularityPercentile])
+  @@index([name])
+}
+
+model NameYearlyStat {
+  id           Int  @id @default(autoincrement())
+  nameId       Int
+  year         Int
+  births       Int
+  rankThatYear Int?
+
+  name Name @relation(fields: [nameId], references: [id], onDelete: Cascade)
+
+  @@unique([nameId, year])
+  @@index([nameId])
+  @@index([year])
+}
+
+model User {
+  id            String           @id @default(cuid())
+  email         String           @unique @db.VarChar(254)
+  passwordHash  String           @db.VarChar(72)
+  emailVerified Boolean          @default(false)
+  lastName      String?          @db.VarChar(64)
+  genderPref    GenderPreference @default(BOTH)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  lists              List[]
+  swipeHistory       SwipeHistory[]
+  refreshTokens      RefreshToken[]
+  emailVerifications EmailVerification[]
+
+  @@index([email])
+}
+
+model RefreshToken {
+  id         String   @id @default(cuid())
+  userId     String
+  tokenHash  String   @unique @db.VarChar(64)
+  expiresAt  DateTime
+  revoked    Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+}
+
+model EmailVerification {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique @db.VarChar(64)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model List {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String   @db.VarChar(128)
+  type      ListType @default(CUSTOM)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entries ListEntry[]
+
+  @@index([userId])
+  @@index([userId, type])
+}
+
+model ListEntry {
+  id       String   @id @default(cuid())
+  listId   String
+  nameId   Int
+  position Int
+  addedAt  DateTime @default(now())
+
+  list List @relation(fields: [listId], references: [id], onDelete: Cascade)
+  name Name @relation(fields: [nameId], references: [id])
+
+  @@unique([listId, nameId])
+  @@index([listId, position])
+}
+
+model SwipeHistory {
+  id        String        @id @default(cuid())
+  userId    String
+  nameId    Int
+  decision  SwipeDecision
+  swipedAt  DateTime      @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name Name @relation(fields: [nameId], references: [id])
+
+  @@unique([userId, nameId])
+  @@index([userId])
+  @@index([userId, decision])
+}

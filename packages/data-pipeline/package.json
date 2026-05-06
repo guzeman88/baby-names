@@ -1,0 +1,24 @@
+{
+  "name": "data-pipeline",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "dry-run": "tsx src/index.ts --dry-run",
+    "post-process": "tsx src/index.ts --post-process-only"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.2.1",
+    "ioredis": "^5.4.2",
+    "node-fetch": "^3.3.2",
+    "unzipper": "^0.12.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.7",
+    "@types/unzipper": "^0.10.10",
+    "prisma": "^6.2.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
