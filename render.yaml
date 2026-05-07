@@ -3,8 +3,8 @@ services:
     name: babynames-api
     runtime: node
     plan: free
-    buildCommand: npm install && cd apps/api && npx prisma generate && npx prisma migrate deploy && npm run build
-    startCommand: node apps/api/dist/index.js
+    buildCommand: npm install && cd apps/api && npx prisma generate && npm run build
+    startCommand: cd apps/api && npx prisma migrate deploy && node dist/index.js
     healthCheckPath: /v1/health
     envVars:
       - key: NODE_ENV
