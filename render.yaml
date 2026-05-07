@@ -2,6 +2,7 @@ services:
   - type: web
     name: babynames-api
     runtime: node
+    plan: free
     buildCommand: npm install && cd apps/api && npx prisma generate && npm run build
     startCommand: node apps/api/dist/index.js
     healthCheckPath: /v1/health
@@ -27,3 +28,4 @@ databases:
   - name: babynames-db
     databaseName: babyname
     user: babyname
+    plan: free
