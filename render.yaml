@@ -15,11 +15,6 @@ services:
         fromDatabase:
           name: babynames-db
           property: connectionString
-      - key: REDIS_URL
-        fromService:
-          name: babynames-redis
-          type: keyvalue
-          property: connectionString
       - key: JWT_ACCESS_SECRET
         generateValue: true
       - key: JWT_REFRESH_SECRET
@@ -27,10 +22,6 @@ services:
       - key: FRONTEND_URL
         value: https://shrimpyapp.vercel.app
 
-  - type: keyvalue
-    name: babynames-redis
-    maxmemoryPolicy: allkeys-lru
-    ipAllowList: []
 
 databases:
   - name: babynames-db
