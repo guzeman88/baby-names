@@ -1,11 +1,11 @@
 import Constants from 'expo-constants'
 
 // EXPO_PUBLIC_API_URL is baked in at build time (set in Vercel/CI env vars).
-// Falls back to app.json extra.apiUrl for local dev, then localhost.
+// Falls back to the production Render URL, then localhost for local dev.
 export const API_BASE =
   process.env.EXPO_PUBLIC_API_URL ??
   Constants.expoConfig?.extra?.apiUrl ??
-  'http://localhost:3001/v1'
+  'https://babynames-api.onrender.com/v1'
 
 let _accessToken: string | null = null
 
