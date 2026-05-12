@@ -13,8 +13,9 @@ initAnalytics().catch(() => {})
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
+      staleTime: 1000 * 60 * 30, // 30 minutes — serve from cache on repeat visits
       retry: 1,
+      retryDelay: 3000,
     },
   },
 })
