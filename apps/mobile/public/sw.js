@@ -4,7 +4,7 @@
 //   • API calls      → network-first (fresh data, offline fallback)
 //   • Navigation     → cache-first   (app shell, SPA routing)
 
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const STATIC_CACHE = `baby-names-static-${CACHE_VERSION}`;
 const API_CACHE    = `baby-names-api-${CACHE_VERSION}`;
 const ALL_CACHES   = [STATIC_CACHE, API_CACHE];
