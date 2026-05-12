@@ -29,7 +29,7 @@ export async function buildApp() {
 
   await app.register(fastifyHelmet, { contentSecurityPolicy: false })
   await app.register(fastifyCors, {
-    origin: [FRONTEND_URL, /^http:\/\/localhost/],
+    origin: [FRONTEND_URL, /\.vercel\.app$/, /^https?:\/\/localhost/],
     credentials: true,
   })
   await app.register(fastifyCookie, {
