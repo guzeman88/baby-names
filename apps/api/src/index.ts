@@ -4,12 +4,14 @@ import fastifyCors from '@fastify/cors'
 import fastifyHelmet from '@fastify/helmet'
 import fastifyRateLimit from '@fastify/rate-limit'
 import * as Sentry from '@sentry/node'
+import { spawn } from 'child_process'
 import { authRoutes } from './routes/auth.js'
 import { nameRoutes } from './routes/names.js'
 import { swipeRoutes } from './routes/swipes.js'
 import { listRoutes } from './routes/lists.js'
 import { userRoutes } from './routes/users.js'
 import { errorHandler } from './middleware/errorHandler.js'
+import { prisma } from './lib/db.js'
 
 if (process.env.SENTRY_DSN) {
   Sentry.init({
@@ -61,10 +63,28 @@ export async function buildApp() {
 
 if (process.env.NODE_ENV !== 'test') {
   buildApp().then(app => {
-    app.listen({ port: PORT, host: '0.0.0.0' }, (err) => {
+    app.listen({ port: PORT, host: '0.0.0.0' }, async (err) => {
       if (err) {
         app.log.error(err)
         process.exit(1)
+      }
+
+      // After server is up, spawn SSA data pipeline in the background if DB is sparse
+      try {
+        const count = await prisma.name.count()
+        if (count < 10000) {
+          app.log.info(`Only ${count} names in DB — spawning SSA data pipeline in background`)
+          const child = spawn('npx', ['tsx', 'scripts/maybe-run-pipeline.ts'], {
+            cwd: process.cwd(),
+            detached: true,
+            stdio: 'ignore',
+          })
+          child.unref()
+        } else {
+          app.log.info(`${count.toLocaleString()} names in DB — skipping pipeline`)
+        }
+      } catch (e) {
+        app.log.warn('Could not check name count for pipeline trigger: ' + e)
       }
     })
   })
