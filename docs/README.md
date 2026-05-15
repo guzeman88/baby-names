@@ -16,6 +16,7 @@ This directory contains the full planning and specification documentation for th
 | [DATA_PIPELINE.md](./DATA_PIPELINE.md) | SSA Data Pipeline — ingestion, processing, and loading of 100 years of name data |
 | [FEATURE_SPEC.md](./FEATURE_SPEC.md) | Feature Specifications — detailed behavior for every feature |
 | [EXECUTION_PLAN.md](./EXECUTION_PLAN.md) | Execution Plan — phased development approach, ownership, and milestones |
+| [OPERATIONS.md](./OPERATIONS.md) | Operations Guide — live URLs, deployment, env vars, known issues, common tasks |
 
 ---
 
