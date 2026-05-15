@@ -13,8 +13,5 @@ jobs:
     steps:
       - name: Wake up Render
         run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" --max-time 60 https://babynames-api.onrender.com/v1/health)
+          response=$(curl -s -o /dev/null -w "%{http_code}" --max-time 120 https://babynames-api.onrender.com/v1/health || echo "timeout")
           echo "Health check status: $response"
-          if [ "$response" != "200" ]; then
-            echo "Warning: health check returned $response"
-          fi
