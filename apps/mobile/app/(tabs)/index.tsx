@@ -85,6 +85,14 @@ export default function BrowseScreen() {
   const allNames = data?.pages.flatMap((p: any) => p.data) ?? []
   const totalCount = data?.pages[0]?.totalCount as number | undefined
 
+  // Show "waking up server" message if loading takes > 8 seconds (Render cold start)
+  const [isSlowLoad, setIsSlowLoad] = useState(false)
+  useEffect(() => {
+    if (!isLoading) { setIsSlowLoad(false); return }
+    const t = setTimeout(() => setIsSlowLoad(true), 8000)
+    return () => clearTimeout(t)
+  }, [isLoading])
+
   // Section offsets for A–Z scrubber (built from server-filtered names)
   const sectionOffsets = useMemo(() => {
     const offsets: Record<string, number> = {}
@@ -198,13 +206,17 @@ export default function BrowseScreen() {
 
       {isLoading ? (
         <>
+          {isSlowLoad && (
+            <Text style={styles.wakingText}>Waking up server… (~30 seconds on first load)</Text>
+          )}
           {Array.from({ length: 12 }).map((_, i) => (
             <NameRowSkeleton key={i} />
           ))}
         </>
       ) : isError ? (
         <View style={styles.errorBox}>
-          <Text style={styles.errorText}>Failed to load names.</Text>
+          <Text style={styles.errorText}>Server took too long to respond.</Text>
+          <Text style={[styles.errorText, { fontSize: 14, marginTop: 4, opacity: 0.7 }]}>The server may still be waking up.</Text>
           <TouchableOpacity style={styles.retryBtn} onPress={() => refetch()}>
             <Text style={styles.retryText}>Retry</Text>
           </TouchableOpacity>
@@ -303,6 +315,7 @@ const styles = StyleSheet.create({
   errorText: { fontSize: 16, color: '#EF4444' },
   retryBtn: { backgroundColor: '#8B5CF6', paddingHorizontal: 24, paddingVertical: 10, borderRadius: 8 },
   retryText: { color: '#fff', fontWeight: '600' },
+  wakingText: { textAlign: 'center', color: '#8B5CF6', fontSize: 14, paddingVertical: 8, paddingHorizontal: 16 },
   scrubber: { position: 'absolute', right: 4, top: 0, bottom: 0, justifyContent: 'center', gap: 0 },
   scrubberItem: { paddingHorizontal: 4, paddingVertical: 1 },
   scrubberLetter: { fontSize: 10, fontWeight: '600', color: '#8B5CF6' },

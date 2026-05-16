@@ -123,6 +123,7 @@ export default function SwipeScreen() {
   const qc = useQueryClient()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [showNudge, setShowNudge] = useState(false)
+  const [isSlowLoad, setIsSlowLoad] = useState(false)
   const history = useRef<Array<{ name: Name; decision: 'LIKED' | 'PASSED' }>>([])
   const guestSwipeCount = useRef(0)
 
@@ -133,6 +134,13 @@ export default function SwipeScreen() {
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (last: any) => (last.hasMore ? last.nextCursor : undefined),
   })
+
+  // Show "waking up server" message if loading takes > 8 seconds (Render cold start)
+  useEffect(() => {
+    if (!isLoading) { setIsSlowLoad(false); return }
+    const t = setTimeout(() => setIsSlowLoad(true), 8000)
+    return () => clearTimeout(t)
+  }, [isLoading])
 
   const allNames = (data?.pages.flatMap((p: any) => p.data) ?? []).filter(
     (n) => !swipedIds.has(n.id)
@@ -193,7 +201,9 @@ export default function SwipeScreen() {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" color="#8B5CF6" />
-        <Text style={styles.loadingText}>Loading names…</Text>
+        <Text style={styles.loadingText}>
+          {isSlowLoad ? 'Waking up server…\nThis takes ~30 seconds on first load' : 'Loading names…'}
+        </Text>
       </View>
     )
   }
@@ -201,7 +211,8 @@ export default function SwipeScreen() {
   if (isError) {
     return (
       <View style={styles.center}>
-        <Text style={styles.errorText}>Failed to load names.</Text>
+        <Text style={styles.errorText}>Server took too long to respond.</Text>
+        <Text style={[styles.errorText, { fontSize: 14, marginTop: 4, opacity: 0.7 }]}>The server may still be waking up.</Text>
         <TouchableOpacity style={styles.retryBtn} onPress={() => refetch()}>
           <Text style={styles.retryText}>Retry</Text>
         </TouchableOpacity>

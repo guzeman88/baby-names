@@ -2,8 +2,8 @@ name: Keep Render Warm
 
 on:
   schedule:
-    # Every 10 minutes — Render free tier sleeps after ~15 min of inactivity
-    - cron: '*/10 * * * *'
+    # Every 5 minutes — Render free tier sleeps after ~15 min of inactivity
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
